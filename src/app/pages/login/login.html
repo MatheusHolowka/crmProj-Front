@@ -1,0 +1,65 @@
+<div class="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 transition-colors duration-300">
+  
+  <div class="absolute top-10 right-10">
+    <button (click)="theme.toggleTheme()">
+  {{ theme.isDarkMode() ? '☀️' : '🌙' }}
+</button>
+  </div>
+
+  <div class="max-w-md w-full bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl border border-slate-100 dark:border-slate-800 p-10 relative overflow-hidden">
+    
+    <div class="text-center mb-10">
+      <div class="text-2xl font-black tracking-tighter text-indigo-600 italic mb-2">
+        CORE<span class="text-slate-400 dark:text-slate-500 font-light">CRM</span>
+      </div>
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Seja bem-vindo</h2>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mt-2 font-light">Acesse sua conta para gerenciar seus leads.</p>
+    </div>
+
+    <form (submit)="onSubmit()" class="space-y-6">
+      <div>
+        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">E-mail</label>
+        <input 
+          type="email" 
+          placeholder="seu@email.com"
+          class="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-400 text-sm"
+        >
+      </div>
+
+      <div>
+        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">Senha</label>
+        <input 
+          type="password" 
+          placeholder="••••••••"
+          class="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-400 text-sm"
+        >
+      </div>
+
+      <div class="flex items-center justify-between text-[11px] px-1 font-medium">
+        <label class="flex items-center gap-2 text-slate-500 dark:text-slate-400 cursor-pointer">
+          <input type="checkbox" class="w-4 h-4 rounded border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+          Manter conectado
+        </label>
+        <a href="#" class="text-indigo-600 hover:text-indigo-500 transition">Esqueceu a senha?</a>
+      </div>
+
+      <button 
+        type="submit"
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition shadow-xl shadow-indigo-100 dark:shadow-none mt-4 text-sm tracking-wide"
+      >
+        Entrar no Sistema
+      </button>
+    </form>
+
+    <div class="mt-10 text-center border-t border-slate-50 dark:border-slate-800 pt-8">
+      <p class="text-xs text-slate-500 dark:text-slate-400">
+        Não possui uma instância? 
+        <a href="#" class="text-indigo-600 font-bold hover:underline">Falar com o suporte</a>
+      </p>
+    </div>
+  </div>
+
+  <p class="mt-8 text-[11px] text-slate-400 dark:text-slate-600 font-medium uppercase tracking-widest">
+    &copy; 2026 CoreCRM Framework
+  </p>
+</div>

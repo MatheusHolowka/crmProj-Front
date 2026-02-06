@@ -1,0 +1,9 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+/* Transição suave para os inputs no foco */
+input:focus {
+  transform: translateY(-1px);
+}
