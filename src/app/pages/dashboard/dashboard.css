@@ -1,0 +1,20 @@
+/* Correção do Delay: Força aceleração de hardware */
+.cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  will-change: transform; /* Crucial para seguir o mouse 100% */
+}
+
+/* Garante que o card sendo carregado não tenha atraso visual */
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  opacity: 0.9;
+  pointer-events: none; /* Evita que o preview intercepte eventos do mouse */
+}
+
+/* Placeholder suave */
+.cdk-drag-placeholder {
+  opacity: 0.3;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}

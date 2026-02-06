@@ -1,0 +1,76 @@
+<div class="flex min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
+  
+  <app-sidebar></app-sidebar>
+
+  <main class="flex-1 p-8 overflow-x-hidden" cdkDropListGroup>
+    
+    <header class="flex justify-between items-center mb-10">
+      <div>
+        <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white italic">
+          CORE<span class="text-indigo-600">KANBAN</span>
+        </h1>
+        <p class="text-slate-500 dark:text-slate-400 font-medium">Fluxo de Monitoramento de Leads Ativo</p>
+      </div>
+      
+      <button (click)="toggleTheme()" class="p-3 rounded-2xl bg-white dark:bg-slate-900 shadow-xl border border-slate-100 dark:border-slate-800">
+        {{ isDarkMode() ? '🌙' : '☀️' }}
+      </button>
+    </header>
+
+    <div class="flex gap-6 overflow-x-auto pb-8 custom-scrollbar">
+      
+      <ng-container *ngFor="let coluna of [
+        { titulo: 'Novos Leads', cor: 'bg-indigo-500', lista: novosLeads },
+        { titulo: 'Qualificação', cor: 'bg-amber-500', lista: qualificacao },
+        { titulo: 'Proposta', cor: 'bg-emerald-500', lista: proposta },
+        { titulo: 'Fechamento', cor: 'bg-blue-600', lista: fechamento }
+      ]">
+        <div class="flex-shrink-0 w-80">
+          <div class="flex items-center justify-between mb-6 px-2">
+            <h2 class="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2 uppercase text-xs tracking-widest">
+              <span [class]="'w-2 h-2 rounded-full ' + coluna.cor"></span> {{ coluna.titulo }}
+            </h2>
+            <span class="bg-white dark:bg-slate-800 text-slate-500 px-2.5 py-1 rounded-lg text-xs font-bold shadow-sm">
+              {{ coluna.lista.length }}
+            </span>
+          </div>
+
+          <div
+            cdkDropList
+            [cdkDropListData]="coluna.lista"
+            (cdkDropListDropped)="drop($event)"
+            class="min-h-[70vh] rounded-[2rem] bg-slate-100/50 dark:bg-slate-900/40 p-3 border-2 border-dashed border-transparent hover:border-indigo-500/20 transition-all"
+          >
+            <div 
+              *ngFor="let lead of coluna.lista" 
+              cdkDrag 
+              class="bg-white dark:bg-slate-900 p-5 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 mb-4 cursor-grab active:grabbing hover:scale-[1.02] transition-transform"
+            >
+              <div class="flex justify-between items-start mb-4">
+                <span class="text-[9px] font-black uppercase tracking-tighter text-indigo-600 bg-indigo-50 dark:bg-indigo-900/40 px-2 py-1 rounded-md">
+                  {{ lead.origem }}
+                </span>
+                <span class="text-slate-400 text-[10px] font-medium">{{ lead.tempo }}</span>
+              </div>
+
+              <h3 class="font-bold text-slate-800 dark:text-slate-100 leading-tight mb-2">{{ lead.nome }}</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed mb-4 italic">
+                "{{ lead.mensagem }}"
+              </p>
+
+              <div class="flex items-center gap-3 pt-4 border-t border-slate-50 dark:border-slate-800">
+                <div class="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center text-[10px] text-white font-black shadow-lg">
+                  {{ lead.nome[0] }}
+                </div>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">{{ lead.localidade }}</span>
+              </div>
+
+              <div *cdkDragPlaceholder class="bg-indigo-100/50 dark:bg-indigo-900/20 border-2 border-dashed border-indigo-500 rounded-3xl h-32 mb-4"></div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+    </div>
+  </main>
+</div>
