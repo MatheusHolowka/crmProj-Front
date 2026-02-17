@@ -1,48 +1,64 @@
-/* Scrollbar horizontal (Container principal) */
-.custom-scrollbar::-webkit-scrollbar {
-  height: 8px;
-}
+/* --- SCROLLBARS FINAS --- */
+.custom-scrollbar::-webkit-scrollbar { height: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
+.custom-scrollbar-y::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar-y::-webkit-scrollbar-thumb { background-color: #e2e8f0; border-radius: 4px; }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
+/* --- PERFORMANCE & FLUIDEZ --- */
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(156, 163, 175, 0.3);
-  border-radius: 20px;
-}
-
-/* Scrollbar vertical (Dentro das colunas) */
-.custom-scrollbar-y::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scrollbar-y::-webkit-scrollbar-track {
-  background: transparent;
-}
-.custom-scrollbar-y::-webkit-scrollbar-thumb {
-  background-color: rgba(156, 163, 175, 0.3);
-  border-radius: 20px;
-}
-
-/* Correções do Drag & Drop */
-.cdk-drag-preview {
+/* 1. Preview (O que você arrasta) */
+::ng-deep .cdk-drag-preview {
   box-sizing: border-box;
-  border-radius: 1.5rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-  background-color: #1e293b; /* Ajuste para dark mode se necessário */
-  opacity: 0.95;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  
+  /* --- CORREÇÃO DO DELAY --- */
+  /* Remove qualquer animação herdada do HTML (como o duration-200) */
+  /* Isso garante que o card siga o mouse instantaneamente */
+  transition: none !important; 
+  animation: none !important;
+  /* ------------------------- */
+
+  /* Sombra focada */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  cursor: grabbing;
+  
+  /* Aceleração de Hardware */
+  will-change: transform;
 }
 
-/* Garante que o placeholder não colapse */
+/* Dark Mode Fix */
+::ng-deep .dark .cdk-drag-preview {
+  background-color: #0f172a !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* 2. Placeholder (Espaço Vazio) */
 .cdk-drag-placeholder {
-  opacity: 1 !important; 
-  background: rgba(99, 102, 241, 0.05);
+  opacity: 1;
+  background: rgba(226, 232, 240, 0.3);
+  border: 1px dashed #cbd5e1;
+  border-radius: 0.75rem;
+  margin-bottom: 0.625rem; /* mb-2.5 */
+  min-height: 100px; /* Mais compacto */
 }
 
+::ng-deep .dark .cdk-drag-placeholder {
+  background: rgba(30, 41, 59, 0.3);
+  border-color: #475569;
+}
+
+/* 3. Animações Rápidas (200ms é mais fluido que o padrão) */
 .cdk-drag-animating {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  transition: transform 200ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-.cdk-drop-list-dragging .cdk-drag {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+.cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
+  transition: transform 200ms cubic-bezier(0.2, 0, 0, 1);
 }
