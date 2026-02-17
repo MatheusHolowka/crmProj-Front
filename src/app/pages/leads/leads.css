@@ -1,0 +1,12 @@
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+tr:last-child td:first-child { border-bottom-left-radius: 2.5rem; }
+tr:last-child td:last-child { border-bottom-right-radius: 2.5rem; }
+
+input::placeholder {
+  font-weight: 500;
+  font-size: 12px;
+}

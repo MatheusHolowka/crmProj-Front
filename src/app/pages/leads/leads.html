@@ -1,0 +1,65 @@
+<div class="flex min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
+  <app-sidebar></app-sidebar>
+
+  <main class="flex-1 p-10">
+    <header class="flex justify-between items-center mb-12">
+      <div>
+        <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white italic uppercase">
+          GESTÃO DE <span class="text-indigo-600">LEADS</span>
+        </h1>
+        <p class="text-slate-500 dark:text-slate-400 font-medium">Visualize e gerencie todos os contatos capturados</p>
+      </div>
+      
+      <div class="flex gap-4">
+        <div class="relative">
+          <input type="text" placeholder="Buscar lead..." class="pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+          <span class="absolute left-3 top-2.5 opacity-40">🔍</span>
+        </div>
+        <button class="bg-indigo-600 text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/20">
+          + Novo Lead
+        </button>
+      </div>
+    </header>
+
+    <div class="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="text-[10px] uppercase tracking-widest text-slate-400 font-bold border-b border-slate-50 dark:border-slate-800">
+            <th class="px-8 py-6">Lead</th>
+            <th class="px-8 py-6 text-center">Status</th>
+            <th class="px-8 py-6">Origem</th>
+            <th class="px-8 py-6">Cidade</th>
+            <th class="px-8 py-6">Data</th>
+            <th class="px-8 py-6">Ações</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-50 dark:divide-slate-800">
+          @for (lead of leads(); track lead.email) {
+            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
+              <td class="px-8 py-6 flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-xs shadow-md">
+                  {{ lead.nome[0] }}
+                </div>
+                <div>
+                  <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">{{ lead.nome }}</div>
+                  <div class="text-[10px] text-slate-400">{{ lead.email }}</div>
+                </div>
+              </td>
+              <td class="px-8 py-6 text-center">
+                <span [class]="'px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter ' + lead.statusCor">
+                  {{ lead.status }}
+                </span>
+              </td>
+              <td class="px-8 py-6 text-xs font-bold text-slate-600 dark:text-slate-400">{{ lead.origem }}</td>
+              <td class="px-8 py-6 text-xs text-slate-400">{{ lead.cidade }}</td>
+              <td class="px-8 py-6 text-xs text-slate-400">{{ lead.data }}</td>
+              <td class="px-8 py-6">
+                <button class="text-slate-300 hover:text-indigo-600 transition">⚙️</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>

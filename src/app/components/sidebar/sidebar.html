@@ -1,25 +1,42 @@
-<aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen sticky top-0 transition-colors duration-300">
-  <div class="p-6">
-    <div class="text-2xl font-black tracking-tighter text-indigo-600 italic mb-10">
-      CORE<span class="text-slate-400 dark:text-slate-500 font-light">CRM</span>
+<aside [class.w-64]="!isCollapsed()" [class.w-20]="isCollapsed()" class="sidebar-container">
+  <button (click)="toggleSidebar()" class="toggle-btn">
+    {{ isCollapsed() ? '→' : '←' }}
+  </button>
+
+  <div class="sidebar-content">
+    <div class="logo-section mb-10">
+      <div class="logo-wrapper">
+        <span class="text-2xl font-black italic text-indigo-600 shrink-0">CORE</span>
+        <span *ngIf="!isCollapsed()" class="text-2xl font-light text-slate-400 italic ml-1"
+          >CRM</span
+        >
+      </div>
     </div>
-    
-    <nav class="space-y-2">
-      <a routerLink="/dashboard" routerLinkActive="bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400" class="flex items-center gap-3 p-3 rounded-xl text-slate-600 dark:text-slate-400 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-        <span class="text-xl">📊</span> Dashboard
+
+    <nav class="nav-menu">
+      <a routerLink="/dashboard" routerLinkActive="active-item" class="nav-link">
+        <span class="icon">📊</span>
+        <span *ngIf="!isCollapsed()" class="nav-text">Dashboard</span>
       </a>
-      <a href="#" class="flex items-center gap-3 p-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-        <span class="text-xl">👥</span> Leads
+
+      <a routerLink="/whatsapp" routerLinkActive="active-item" class="nav-link">
+        <span class="icon">💬</span>
+        <span *ngIf="!isCollapsed()" class="nav-text">WhatsApp</span>
       </a>
-      <a href="#" class="flex items-center gap-3 p-3 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-        <span class="text-xl">⚙️</span> Configurações
+
+      <a routerLink="/leads" routerLinkActive="active-item" class="nav-link">
+        <span class="icon">👥</span>
+        <span *ngIf="!isCollapsed()" class="nav-text">Leads</span>
       </a>
     </nav>
-  </div>
 
-  <div class="mt-auto p-6 border-t border-slate-100 dark:border-slate-800">
-    <button (click)="toggleTheme()" class="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm font-bold text-slate-700 dark:text-slate-300">
-      {{ isDarkMode() ? '🌙 Dark Mode' : '☀️ Light Mode' }}
-    </button>
+    <div class="sidebar-footer">
+      <button (click)="toggleTheme()" class="theme-toggle">
+        <span class="text-lg">{{ isDarkMode() ? '🌙' : '☀️' }}</span>
+        <span *ngIf="!isCollapsed()" class="theme-text">
+          {{ isDarkMode() ? 'DARK' : 'LIGHT' }}
+        </span>
+      </button>
+    </div>
   </div>
 </aside>

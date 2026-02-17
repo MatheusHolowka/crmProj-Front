@@ -1,20 +1,48 @@
-/* Correção do Delay: Força aceleração de hardware */
-.cdk-drag {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-  will-change: transform; /* Crucial para seguir o mouse 100% */
+/* Scrollbar horizontal (Container principal) */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px;
 }
 
-/* Garante que o card sendo carregado não tenha atraso visual */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.3);
+  border-radius: 20px;
+}
+
+/* Scrollbar vertical (Dentro das colunas) */
+.custom-scrollbar-y::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar-y::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar-y::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.3);
+  border-radius: 20px;
+}
+
+/* Correções do Drag & Drop */
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 1.5rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  opacity: 0.9;
-  pointer-events: none; /* Evita que o preview intercepte eventos do mouse */
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  background-color: #1e293b; /* Ajuste para dark mode se necessário */
+  opacity: 0.95;
 }
 
-/* Placeholder suave */
+/* Garante que o placeholder não colapse */
 .cdk-drag-placeholder {
-  opacity: 0.3;
+  opacity: 1 !important; 
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drop-list-dragging .cdk-drag {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }

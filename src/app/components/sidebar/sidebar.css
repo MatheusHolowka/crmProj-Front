@@ -1,62 +1,228 @@
-/* Sidebar Container */
-aside {
-  z-index: 100; /* Garante que fique acima de outros elementos se necessário */
-  min-width: 16rem; /* Largura fixa para não achatar o conteúdo */
-  max-width: 16rem;
-  box-shadow: 4px 0 10px -5px rgba(0, 0, 0, 0.05);
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+/* =========================================
+   CONTAINER PRINCIPAL
+   ========================================= */
+.sidebar-container {
+  position: relative;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  border-right: 1px solid #e2e8f0;
+  z-index: 100;
+  /* Transição suave para largura */
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Estilização dos Links de Navegação */
-nav a {
+:host-context(.dark) .sidebar-container {
+  background-color: #0f172a;
+  border-color: #1e293b;
+}
+
+/* =========================================
+   CONTEÚDO INTERNO
+   ========================================= */
+.sidebar-content {
+  padding: 1.5rem 1rem; /* Padding original */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  /* Adicionada transição para o padding não pular */
+  transition: padding 0.3s ease;
+}
+
+/* AJUSTE CRÍTICO: Quando fechado (w-20), reduz o padding lateral */
+aside.w-20 .sidebar-content {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* =========================================
+   LOGO SECTION
+   ========================================= */
+.logo-section {
+  display: flex;
+  align-items: center;
+  height: 2.5rem;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 110%;
+  transition: justify-content 0.3s;
+}
+
+
+/* Centraliza o logo quando fechado */
+aside.w-20 .logo-section {
+  justify-content: center;
+}
+
+/* Wrapper interno do logo para evitar corte do itálico */
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Esse padding na direita evita que a ponta do itálico seja cortada */
+  padding-right: 4px; 
+}
+
+/* =========================================
+   NAVEGAÇÃO E LINKS
+   ========================================= */
+.nav-menu {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-link {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 600;
+  color: #64748b;
   text-decoration: none;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Efeito de Hover e Active */
-nav a:hover {
-  transform: translateX(4px); /* Pequeno deslocamento lateral no hover */
-}
-
-/* Estilo para quando a rota está ativa (RouterLinkActive) */
-.active-link {
-  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1), 0 2px 4px -1px rgba(79, 70, 229, 0.06);
-}
-
-/* Botão de Toggle de Tema na parte inferior */
-button {
-  cursor: pointer;
-  border: none;
-  outline: none;
   transition: all 0.2s ease;
+  overflow: hidden; /* Garante limpeza na animação */
 }
 
-button:active {
-  transform: scale(0.95);
+/* Centraliza o ícone quando fechado */
+aside.w-20 .nav-link {
+  justify-content: center;
+  padding: 0.75rem; /* Remove padding extra lateral */
 }
 
-/* Ajuste para o Dark Mode (Tailwind handles most, but specific tweaks here) */
-:host-context(.dark) aside {
-  box-shadow: 4px 0 15px -5px rgba(0, 0, 0, 0.3);
+/* Estado Ativo */
+.active-item {
+  background-color: #4f46e5 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+/* Estado de Hover Padrão (Light Mode) */
+.nav-link:hover {
+  background-color: #f1f5f9; /* Slate 100 - cinza bem clarinho */
+  color: #334155; /* Slate 700 - texto mais escuro */
+  
+  /* Um charme extra: move levemente para a direita */
+  transform: translateX(4px); 
 }
 
-/* Scrollbar interna caso o menu cresça muito */
-aside::-webkit-scrollbar {
-  width: 4px;
+/* Estado de Hover (Dark Mode) */
+:host-context(.dark) .nav-link:hover {
+  background-color: #1e293b; /* Slate 800 - cinza escuro azulado */
+  color: #f8fafc; /* Slate 50 - texto quase branco */
 }
 
-aside::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 10px;
+/* Opcional: Efeito no ícone durante o hover */
+.nav-link:hover .icon {
+  transform: scale(1.1); /* Aumenta o ícone levemente */
+  transition: transform 0.2s ease;
+}
+/* =========================================
+   RODAPÉ E TEMA
+   ========================================= */
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: center;
 }
 
-.dark aside::-webkit-scrollbar-thumb {
-  background: #334155;
+.theme-toggle {
+  width: 100%;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border-radius: 0.75rem;
+  background-color: #f1f5f9; /* Slate 100 */
+  border: none;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  overflow: hidden;
+}
+
+/* Hover no Modo Claro (Light Mode) */
+.theme-toggle:hover {
+  background-color: #e2e8f0; /* Slate 200 - um pouco mais escuro que o normal */
+  color: #1e293b; /* Slate 800 - texto quase preto */
+  
+  /* Efeito de elevação */
+  transform: translateY(-2px); 
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Hover no Modo Escuro (Dark Mode) */
+:host-context(.dark) .theme-toggle:hover {
+  background-color: #334155; /* Slate 700 - um pouco mais claro que o fundo dark */
+  color: #ffffff; /* Texto branco puro */
+  
+  /* Sombra mais forte para aparecer no escuro */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+/* Efeito de Clique (Active) - Dá a sensação de apertar o botão */
+.theme-toggle:active {
+  transform: translateY(0) scale(0.98); /* Volta pro lugar e encolhe um pouquinho */
+  box-shadow: none; /* Remove a sombra */
+  transition: transform 0.1s;
+}
+
+/* Animação extra no ícone (Sol/Lua) */
+.theme-toggle:hover span:first-child {
+  transform: rotate(15deg) scale(1.1); /* Gira e aumenta o ícone */
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Efeito elástico */
+  display: inline-block;
+}
+
+:host-context(.dark) .theme-toggle {
+  background-color: #1e293b; /* Slate 800 */
+  color: #cbd5e1;
+}
+
+.theme-text {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  white-space: nowrap; /* Evita quebra de linha na animação */
+}
+
+/* =========================================
+   BOTÃO DE TOGGLE (FLECHA)
+   ========================================= */
+.toggle-btn {
+  position: absolute;
+  right: -0.75rem;
+  top: 50%; /* Mantém no meio verticalmente */
+  transform: translateY(-50%);
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  cursor: pointer;
+  z-index: 120;
+  color: #64748b;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+:host-context(.dark) .toggle-btn {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #ffffff;
+}
+
+.toggle-btn:hover {
+  filter: brightness(0.95);
 }
