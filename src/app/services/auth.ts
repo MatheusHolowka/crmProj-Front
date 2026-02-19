@@ -4,7 +4,7 @@ import { tap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly API_URL = 'http://localhost:3000/auth'; // Endpoint do seu NestJS
+  private readonly API_URL = 'https://crm-crm-back.gpy5uj.easypanel.host/auth';
 
   constructor(private http: HttpClient) {}
 
