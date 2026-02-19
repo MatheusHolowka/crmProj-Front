@@ -9,7 +9,7 @@ RUN npm run build --configuration=production
 # Etapa 2: Servidor Web (Nginx)
 FROM nginx:alpine
 # Ajustado para o nome real da pasta do seu projeto
-COPY --from=build /app/dist/crm-proj-front/browser /usr/share/nginx/html
+COPY --from=build /app/dist/crmProj/browser /usr/share/nginx/html
 # Configuração para evitar erro 404 em SPAs
 RUN printf 'server { \n\
     listen 80; \n\
