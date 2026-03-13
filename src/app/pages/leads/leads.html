@@ -1,3 +1,26 @@
+<div aria-live="assertive" class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6 z-[200]">
+  <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
+    <div *ngIf="notification.show" class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-300 transform ease-in-out">
+      <div class="p-4">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg *ngIf="notification.type === 'success'" class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <svg *ngIf="notification.type === 'error'" class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <div class="ml-3 w-0 flex-1 pt-0.5">
+            <p class="text-sm font-bold text-slate-900 dark:text-white">{{ notification.title }}</p>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{{ notification.message }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="flex min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-500">
   <app-sidebar></app-sidebar>
 
@@ -7,15 +30,21 @@
         <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white italic uppercase">
           GESTÃO DE <span class="text-indigo-600">LEADS</span>
         </h1>
-        <p class="text-slate-500 dark:text-slate-400 font-medium">Visualize e gerencie todos os contatos capturados</p>
+        <p class="text-slate-500 dark:text-slate-400 font-medium text-sm">Contatos ativos na unidade Sinop - MT</p>
       </div>
-      
+
       <div class="flex gap-4">
         <div class="relative">
-          <input type="text" placeholder="Buscar lead..." class="pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+          <input
+            type="text"
+            [ngModel]="searchTermLeads()"
+            (ngModelChange)="searchTermLeads.set($event)"
+            placeholder="Buscar lead por nome, e-mail ou cidade..."
+            class="pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white w-64"
+          />
           <span class="absolute left-3 top-2.5 opacity-40">🔍</span>
         </div>
-        <button class="bg-indigo-600 text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/20">
+        <button (click)="toggleModal()" class="bg-indigo-600 text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/20">
           + Novo Lead
         </button>
       </div>
@@ -30,11 +59,11 @@
             <th class="px-8 py-6">Origem</th>
             <th class="px-8 py-6">Cidade</th>
             <th class="px-8 py-6">Data</th>
-            <th class="px-8 py-6">Ações</th>
+            <th class="px-8 py-6 text-center">Ações</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-50 dark:divide-slate-800">
-          @for (lead of leads(); track lead.email) {
+          @for (lead of filteredLeads(); track lead.id) {
             <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
               <td class="px-8 py-6 flex items-center gap-4">
                 <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-xs shadow-md">
@@ -42,7 +71,7 @@
                 </div>
                 <div>
                   <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">{{ lead.nome }}</div>
-                  <div class="text-[10px] text-slate-400">{{ lead.email }}</div>
+                  <div class="text-[10px] text-slate-400">{{ lead.email || 'Sem e-mail cadastrado' }}</div>
                 </div>
               </td>
               <td class="px-8 py-6 text-center">
@@ -52,9 +81,15 @@
               </td>
               <td class="px-8 py-6 text-xs font-bold text-slate-600 dark:text-slate-400">{{ lead.origem }}</td>
               <td class="px-8 py-6 text-xs text-slate-400">{{ lead.cidade }}</td>
-              <td class="px-8 py-6 text-xs text-slate-400">{{ lead.data }}</td>
-              <td class="px-8 py-6">
-                <button class="text-slate-300 hover:text-indigo-600 transition">⚙️</button>
+              <td class="px-8 py-6 text-xs text-slate-400">{{ lead.dataFormatted }}</td>
+              <td class="px-8 py-6 text-center">
+                <button (click)="editLead(lead)" class="text-slate-300 hover:text-indigo-600 transition p-2">⚙️</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="px-8 py-10 text-center text-slate-400 italic text-sm">
+                Nenhum lead encontrado para "{{ searchTermLeads() }}"
               </td>
             </tr>
           }
@@ -62,4 +97,67 @@
       </table>
     </div>
   </main>
+
+  @if (isModalOpen()) {
+    <div class="fixed inset-0 z-[150] flex items-center justify-center p-4">
+      <div (click)="toggleModal()" class="absolute inset-0 bg-slate-900/70 backdrop-blur-md"></div>
+      <div class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl p-10 border border-slate-100 dark:border-slate-800 animate-in zoom-in duration-300">
+        <div class="text-center mb-10">
+          <h2 class="text-2xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter">
+            {{ isEditing() ? 'Editar' : 'Novo' }} <span class="text-indigo-600">Lead</span>
+          </h2>
+          <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Cadastro Multi-Tenant CoreCRM</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6">
+          <div class="col-span-2">
+            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1">Nome Completo</label>
+            <input [(ngModel)]="newLead.nome" type="text" placeholder="Ex: Matheus Holowka" class="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white transition-all" />
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1">WhatsApp</label>
+            <input [value]="newLead.telefone" (input)="onTelefoneInput($event)" type="text" placeholder="(66) 99999-9999" class="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white transition-all" />
+          </div>
+
+          <div class="relative">
+            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1">Cidade (MT)</label>
+            <div (click)="toggleCityDropdown()" class="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl text-sm text-slate-900 dark:text-white cursor-pointer flex justify-between items-center transition-all hover:border-indigo-500">
+              <span class="truncate">{{ newLead.cidade || 'Selecione...' }}</span>
+              <svg class="w-4 h-4 opacity-50 transition-transform duration-200" [class.rotate-180]="isCityDropdownOpen()" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+            @if (isCityDropdownOpen()) {
+              <div class="absolute z-[160] w-full mt-2 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                <div class="p-3 border-b dark:border-slate-700">
+                  <div class="relative">
+                    <input type="text" [ngModel]="searchTermCity()" (ngModelChange)="searchTermCity.set($event)" (click)="$event.stopPropagation()" placeholder="Pesquisar cidade..." class="w-full pl-9 pr-4 py-2 bg-slate-100 dark:bg-slate-900 border-none rounded-xl text-xs outline-none focus:ring-1 focus:ring-indigo-500 text-slate-900 dark:text-white" />
+                    <span class="absolute left-3 top-2 text-xs opacity-40">🔍</span>
+                  </div>
+                </div>
+                <div class="max-h-48 overflow-y-auto custom-scrollbar p-2 space-y-1">
+                  @for (cidade of filteredCidades(); track cidade) {
+                    <div (click)="selectCity(cidade)" class="px-4 py-3 rounded-xl text-sm text-slate-700 dark:text-slate-300 hover:bg-indigo-600 hover:text-white cursor-pointer transition-colors">{{ cidade }}</div>
+                  } @empty {
+                    <div class="p-4 text-center text-xs text-slate-500 italic">Nenhuma cidade encontrada...</div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="col-span-2">
+            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 ml-1">E-mail de Contato</label>
+            <input [(ngModel)]="newLead.email" type="email" placeholder="cliente@fazenda.com" class="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white transition-all" />
+          </div>
+        </div>
+
+        <div class="flex gap-4 mt-12">
+          <button (click)="toggleModal()" class="flex-1 py-4 text-slate-400 font-bold hover:text-slate-600 transition uppercase text-[10px] tracking-widest">Cancelar</button>
+          <button (click)="saveLead()" [disabled]="isLoading()" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition shadow-xl shadow-indigo-500/30 uppercase text-[10px] tracking-widest disabled:bg-slate-400 disabled:shadow-none">
+            {{ isLoading() ? 'Gravando...' : isEditing() ? 'Atualizar Lead' : 'Salvar Lead' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

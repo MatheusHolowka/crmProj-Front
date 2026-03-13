@@ -4,14 +4,15 @@ import { tap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly API_URL = 'https://crm-crm-back.gpy5uj.easypanel.host/auth';
+  // Mude para o endereço local onde o seu NestJS está rodando (geralmente porta 3000)
+  private readonly API_URL = 'http://127.0.0.1:3000/auth'; 
 
   constructor(private http: HttpClient) {}
 
   login(credentials: { email: string; password: string }) {
     return this.http.post<any>(`${this.API_URL}/login`, credentials).pipe(
       tap(res => {
-        // Armazena o token vindo do NestJS
+        // ATENÇÃO: Verifique se o seu interceptor busca 'access_token' ou apenas 'token'
         localStorage.setItem('access_token', res.access_token);
         localStorage.setItem('user', JSON.stringify(res.user));
       })
