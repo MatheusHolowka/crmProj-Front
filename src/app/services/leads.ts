@@ -11,11 +11,15 @@ export class LeadsService {
     return this.http.get<any[]>(this.API);
   }
 
+  // Novo método para persistir a mudança de coluna no MongoDB
+  updateStatus(id: string, status: string): Observable<any> {
+    return this.http.patch(`${this.API}/${id}/status`, { status });
+  }
+
   createLead(lead: any): Observable<any> {
     return this.http.post(this.API, lead);
   }
 
-  // Corrigido para this.API e removido o /leads repetido
   updateLead(id: string, lead: any): Observable<any> {
     return this.http.patch(`${this.API}/${id}`, lead);
   }

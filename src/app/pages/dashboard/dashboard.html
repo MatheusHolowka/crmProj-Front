@@ -1,23 +1,19 @@
-<div
-  class="flex h-screen w-full overflow-hidden bg-[#F3F5F9] dark:bg-slate-950 transition-colors duration-500"
->
+<div class="flex h-screen w-full overflow-hidden bg-[#F3F5F9] dark:bg-slate-950 transition-colors duration-500">
   <app-sidebar class="flex-none h-full z-20 shadow-xl"></app-sidebar>
 
   <main class="flex-1 flex flex-col h-full relative min-w-0" cdkDropListGroup>
     <header class="flex-none flex justify-between items-center px-8 py-6 bg-transparent z-10">
       <div>
-        <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white italic">
+        <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white italic uppercase">
           CORE<span class="text-indigo-600">KANBAN</span>
         </h1>
-        <p class="text-slate-500 dark:text-slate-400 font-medium text-sm mt-1">
-          Fluxo de Monitoramento de Leads Ativo
+        <p class="text-slate-500 dark:text-slate-400 font-medium text-sm mt-1 italic">
+          Fluxo Multi-Tenant: {{ leadForm.cidade || 'Unidade Sinop' }}
         </p>
       </div>
 
       <div class="flex gap-3">
-        <button
-          class="hidden md:flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-indigo-200 dark:shadow-none transition-all hover:-translate-y-0.5"
-        >
+        <button (click)="toggleModal()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg transition-all hover:-translate-y-0.5">
           <span>+</span> Novo Card
         </button>
       </div>
@@ -25,27 +21,19 @@
 
     <div class="flex-1 overflow-x-auto overflow-y-hidden p-8 pt-0 custom-scrollbar">
       <div class="flex h-full gap-6">
-        <ng-container
-          *ngFor="
-            let coluna of [
-              { titulo: 'Novos Leads', cor: 'bg-indigo-500', lista: novosLeads },
-              { titulo: 'Qualificação', cor: 'bg-amber-500', lista: qualificacao },
-              { titulo: 'Proposta', cor: 'bg-emerald-500', lista: proposta },
-              { titulo: 'Fechamento', cor: 'bg-blue-600', lista: fechamento },
-            ]
-          "
-        >
+        <ng-container *ngFor="let coluna of [
+          { titulo: 'Novos Leads', cor: 'bg-indigo-500', lista: novosLeads(), status: 'NOVO' },
+          { titulo: 'Qualificação', cor: 'bg-amber-500', lista: qualificacao(), status: 'QUALIFICADO' },
+          { titulo: 'Proposta', cor: 'bg-emerald-500', lista: proposta(), status: 'PROPOSTA' },
+          { titulo: 'Fechamento', cor: 'bg-blue-600', lista: fechamento(), status: 'FECHADO' }
+        ]">
           <div class="flex flex-col min-w-[320px] max-w-[400px] flex-1 h-full">
             <div class="flex items-center justify-between mb-4 px-1 flex-none">
-              <h2
-                class="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2 uppercase text-xs tracking-widest"
-              >
+              <h2 class="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2 uppercase text-xs tracking-widest">
                 <span [class]="'w-2.5 h-2.5 rounded-full shadow-sm ' + coluna.cor"></span>
                 {{ coluna.titulo }}
               </h2>
-              <span
-                class="bg-white dark:bg-slate-800 text-slate-500 px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 shadow-sm"
-              >
+              <span class="bg-white dark:bg-slate-800 text-slate-500 px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 shadow-sm">
                 {{ coluna.lista.length }}
               </span>
             </div>
@@ -53,83 +41,37 @@
             <div
               cdkDropList
               [cdkDropListData]="coluna.lista"
-              (cdkDropListDropped)="drop($event)"
+              (cdkDropListDropped)="drop($event, coluna.status)"
               class="flex-1 overflow-y-auto custom-scrollbar-y rounded-[1.5rem] bg-slate-200/50 dark:bg-slate-900/40 p-3 border-2 border-dashed border-transparent hover:border-indigo-500/10 transition-colors"
             >
               <div
-                *ngFor="let lead of coluna.lista"
+                *ngFor="let lead of coluna.lista; trackBy: trackByFn"
                 cdkDrag
-                class="bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 mb-2 cursor-grab active:cursor-grabbing hover:border-indigo-400 dark:hover:border-indigo-500 hover:shadow-md transition-all duration-200 group relative"
+                [cdkDragData]="lead"
+                class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 mb-3 cursor-grab active:cursor-grabbing hover:border-indigo-400 transition-all group"
               >
-                <div class="flex justify-between items-start mb-1.5 h-6">
-                  <span
-                    class="text-[9px] font-black uppercase tracking-wide text-indigo-700 bg-indigo-50 dark:bg-indigo-500/20 dark:text-indigo-300 px-1.5 py-0.5 rounded self-center"
-                  >
+                <div class="flex justify-between items-start mb-2">
+                  <span class="text-[9px] font-black uppercase tracking-wide text-indigo-700 bg-indigo-50 dark:bg-indigo-500/20 dark:text-indigo-300 px-2 py-0.5 rounded">
                     {{ lead.origem }}
                   </span>
-
-                  <div class="flex items-center gap-1">
-                    <button
-                      (click)="editarLead(lead); $event.stopPropagation()"
-                      class="opacity-0 group-hover:opacity-100 transition-opacity p-1 -mt-0.5 rounded-md hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-slate-400 hover:text-indigo-600"
-                      title="Editar Card"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        class="w-3.5 h-3.5"
-                      >
-                        <path
-                          d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z"
-                        />
-                        <path
-                          d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25v-5.5a.75.75 0 00-1.5 0v5.5a1.25 1.25 0 01-1.25 1.25h-9.5a1.25 1.25 0 01-1.25-1.25v-9.5z"
-                        />
-                      </svg>
+                  <div class="flex items-center gap-2">
+                    <button (click)="editarLead(lead); $event.stopPropagation()" class="opacity-0 group-hover:opacity-100 p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition-all">
+                      ⚙️
                     </button>
-
-                    <span class="text-slate-400 text-[9px] font-semibold min-w-[30px] text-right">{{
-                      lead.tempo
-                    }}</span>
+                    <span class="text-slate-400 text-[9px] font-bold">{{ lead.tempo }}</span>
                   </div>
                 </div>
 
-                <div class="pr-2">
-                  <h3
-                    class="font-bold text-slate-800 dark:text-slate-100 text-sm leading-tight mb-0.5"
-                  >
-                    {{ lead.nome }}
-                  </h3>
-
-                  <p
-                    class="text-[10px] text-slate-500 dark:text-slate-400 truncate leading-relaxed italic pr-1 inline-block w-full opacity-80"
-                  >
-                    "{{ lead.mensagem }}"
-                  </p>
+                <div class="mb-3">
+                  <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm mb-1">{{ lead.nome }}</h3>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate italic">"{{ lead.mensagem }}"</p>
                 </div>
 
-                <div
-                  class="flex items-center gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-slate-800"
-                >
-                  <div
-                    class="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center text-[8px] text-white font-black shadow-sm"
-                  >
+                <div class="flex items-center gap-2 pt-3 border-t border-slate-50 dark:border-slate-800">
+                  <div class="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-[9px] text-white font-black uppercase">
                     {{ lead.nome[0] }}
                   </div>
-                  <span
-                    class="text-[9px] font-bold text-slate-400 uppercase tracking-wide truncate max-w-[120px]"
-                    >{{ lead.localidade }}</span
-                  >
-                </div>
-
-                <div *cdkDragPlaceholder class="opacity-0"></div>
-
-                <div
-                  *cdkDragPreview
-                  class="bg-white dark:bg-slate-900 p-3 rounded-xl shadow-xl border border-indigo-500/30 w-[280px] opacity-95"
-                >
-                  <h3 class="font-bold text-indigo-600 text-sm">Editando {{ lead.nome }}...</h3>
+                  <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{{ lead.localidade }}</span>
                 </div>
               </div>
             </div>
@@ -138,4 +80,54 @@
       </div>
     </div>
   </main>
+
+  @if (isModalOpen()) {
+    <div class="fixed inset-0 z-[150] flex items-center justify-center p-4">
+      <div (click)="toggleModal()" class="absolute inset-0 bg-slate-900/70 backdrop-blur-md"></div>
+      
+      <div class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl p-10 border border-slate-100 dark:border-slate-800 animate-in zoom-in duration-300">
+        <h2 class="text-2xl font-black text-slate-900 dark:text-white uppercase italic mb-8">
+          {{ isEditing() ? 'Editar' : 'Novo' }} <span class="text-indigo-600">Card</span>
+        </h2>
+
+        <div class="grid grid-cols-2 gap-6">
+          <div class="col-span-2">
+            <label class="text-[10px] font-bold text-slate-400 uppercase mb-2 block">Nome</label>
+            <input [(ngModel)]="leadForm.nome" type="text" class="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm dark:text-white outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase mb-2 block">WhatsApp</label>
+            <input [(ngModel)]="leadForm.telefone" type="text" class="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm dark:text-white outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          
+          <div class="relative">
+            <label class="text-[10px] font-bold text-slate-400 uppercase mb-2 block">Cidade (MT)</label>
+            <div (click)="toggleCityDropdown()" class="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl text-sm dark:text-white cursor-pointer flex justify-between items-center transition-all hover:ring-2 hover:ring-indigo-500">
+              <span class="truncate">{{ leadForm.cidade || 'Selecione...' }}</span>
+              <svg class="w-4 h-4 opacity-50" [class.rotate-180]="isCityDropdownOpen()" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+            @if (isCityDropdownOpen()) {
+              <div class="absolute z-[160] w-full mt-2 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+                <div class="p-3 border-b dark:border-slate-700">
+                  <input type="text" [ngModel]="searchTermCity()" (ngModelChange)="searchTermCity.set($event)" (click)="$event.stopPropagation()" placeholder="Filtrar..." class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-900 border-none rounded-xl text-xs outline-none focus:ring-1 focus:ring-indigo-500 dark:text-white">
+                </div>
+                <div class="max-h-48 overflow-y-auto p-2">
+                  @for (cidade of filteredCidades(); track cidade) {
+                    <div (click)="selectCity(cidade)" class="px-4 py-2.5 rounded-xl text-sm text-slate-700 dark:text-slate-300 hover:bg-indigo-600 hover:text-white cursor-pointer transition-colors">{{ cidade }}</div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="flex gap-4 mt-12">
+          <button (click)="toggleModal()" class="flex-1 py-4 text-slate-400 font-bold uppercase text-[10px] tracking-widest">Cancelar</button>
+          <button (click)="saveLead()" [disabled]="isLoading()" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition shadow-xl shadow-indigo-500/30 uppercase text-[10px] tracking-widest disabled:bg-slate-400">
+            {{ isLoading() ? 'Gravando...' : 'Confirmar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>
